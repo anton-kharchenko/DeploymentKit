@@ -87,7 +87,7 @@ dotnet restore
 
 ### Language and framework
 
-* Target framework: `net11.0`.
+* Target framework: `net10.0`.
 * Nullable reference types are enabled.
 * Implicit usings are enabled.
 * Follow `.editorconfig`.

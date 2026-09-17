@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net11.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateRuntimeConfigurationFiles>false</GenerateRuntimeConfigurationFiles>
     <PackageId>DeploymentKit</PackageId>
-    <Version>1.0.0-preview.1</Version>
+    <Version>1.0.0-preview.2</Version>
     <Title>DeploymentKit</Title>
     <Description>Opinionated, validation-first infrastructure-as-code library for provisioning production-grade Azure environments with Pulumi: PostgreSQL, Redis, Container Apps, Key Vault, networking, monitoring, green-blue deployments, and drift recovery. Designed to be driven safely by both humans and AI agents.</Description>
     <Authors>Anton Kharchenko</Authors>
@@ -18,7 +18,7 @@
     <PackageTags>pulumi;azure;infrastructure-as-code;iac;deployment;orchestration;container-apps;postgresql;ai-agents</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Preview release of DeploymentKit. Preview/runtime dependencies remain where required by the current .NET 11 and Pulumi stack.</PackageReleaseNotes>
+    <PackageReleaseNotes>Preview release of DeploymentKit. Preview/runtime dependencies remain where required by the current .NET 10 and Pulumi stack.</PackageReleaseNotes>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <RootNamespace>DeploymentKit</RootNamespace>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="11.0.0-preview.2.26159.112" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
     <PackageReference Include="Pulumi" Version="3.101.2" />
     <PackageReference Include="Pulumi.Automation" Version="3.101.2" />
     <PackageReference Include="Pulumi.AzureNative" Version="3.14.0" />
@@ -44,12 +44,12 @@
     <PackageReference Include="Azure.ResourceManager.Storage" Version="1.6.0" />
     <PackageReference Include="Azure.ResourceManager.KeyVault" Version="1.3.3" />
     <PackageReference Include="Azure.ResourceManager.ContainerRegistry" Version="1.5.0-beta.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="11.0.0-preview.2.26159.112" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="11.0.0-preview.2.26159.112">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="11.0.0-preview.2" />
-    <PackageReference Include="Npgsql" Version="10.0.2" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
   </ItemGroup>
 </Project>

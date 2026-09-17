@@ -3,7 +3,7 @@
 [![build](https://github.com/anton-kharchenko/DeploymentKit/actions/workflows/build.yml/badge.svg)](https://github.com/anton-kharchenko/DeploymentKit/actions/workflows/build.yml)
 [![NuGet](https://img.shields.io/nuget/v/DeploymentKit.svg?label=NuGet)](https://www.nuget.org/packages/DeploymentKit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![.NET](https://img.shields.io/badge/.NET-11.0-512BD4)](https://dotnet.microsoft.com)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com)
 
 DeploymentKit is an opinionated, validation-first infrastructure-as-code library that provisions production-grade Azure environments with **Pulumi** behind a single fluent entry point: PostgreSQL, Redis, Container Apps, Key Vault, networking, monitoring, green-blue releases, and more. It is designed to be driven safely by humans **and** AI coding agents.
 
@@ -202,7 +202,7 @@ See [docs/ai-assisted-deployment.md](docs/ai-assisted-deployment.md) for a full 
 
 ## Requirements
 
-- .NET SDK 11.0 (preview)
+- .NET SDK 10.0
 - Pulumi CLI (authenticated via `pulumi login`)
 - Azure CLI (`az login`) or Azure service principal credentials
 - An Azure subscription
@@ -223,4 +223,4 @@ MIT — see [LICENSE](LICENSE).
 
 ## Status
 
-`1.0.0-preview.1` — the public API may change between preview releases.
+`1.0.0-preview.2` — the public API may change between preview releases.

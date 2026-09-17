@@ -39,7 +39,7 @@ Our primary branch is `main`. All development should happen on short-lived featu
 ## Coding Standards
 
 ### C# / .NET Guidelines
-* Target Framework: `.NET 11.0`
+* Target Framework: `.NET 10.0`
 * Indentation: Use **4 spaces** for indentation.
 * Namespace Structure: Use **file-scoped namespaces** to reduce nesting (e.g., `namespace DeploymentKit.Components;`).
 * Case Conventions:
