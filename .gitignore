@@ -1,0 +1,40 @@
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# IDEs and Editors
+.idea/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Pulumi state
+.pulumi/
+
+# Secrets and certificates
+*.pfx
+*.pem
+*.key
+*.cer
+.env
+.env.*
+secrets.json
+
+# Tooling state
+.config/.tools-restored
+
+# Test results
+TestResults/
+*.trx
