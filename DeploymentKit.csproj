@@ -7,7 +7,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateRuntimeConfigurationFiles>false</GenerateRuntimeConfigurationFiles>
     <PackageId>DeploymentKit</PackageId>
-    <Version>1.0.0-preview.2</Version>
+    <Version>1.0.0-preview.3</Version>
     <Title>DeploymentKit</Title>
     <Description>Opinionated, validation-first infrastructure-as-code library for provisioning production-grade Azure environments with Pulumi: PostgreSQL, Redis, Container Apps, Key Vault, networking, monitoring, green-blue deployments, and drift recovery. Designed to be driven safely by both humans and AI agents.</Description>
     <Authors>Anton Kharchenko</Authors>
