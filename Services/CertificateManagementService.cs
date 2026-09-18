@@ -201,7 +201,7 @@ public class CertificateManagementService(
                 ResourceGroupName = resourceGroup,
                 Properties = new SecretPropertiesArgs
                 {
-                    Value = certBase64,
+                    Value = Output.CreateSecret(certBase64),
                     ContentType = "application/x-pkcs12",
                     Attributes = new SecretAttributesArgs
                     {
