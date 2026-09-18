@@ -78,11 +78,6 @@ public class NetworkSettings
     public string ApplicationGatewaySubnetAddressSpace { get; set; } = "10.0.4.0/24";
 
     /// <summary>
-    /// Enable private endpoints for all services
-    /// </summary>
-    public bool EnablePrivateEndpoints { get; set; } = true;
-
-    /// <summary>
     /// Enable DDoS protection for the virtual network
     /// </summary>
     public bool EnableDdosProtection { get; set; }

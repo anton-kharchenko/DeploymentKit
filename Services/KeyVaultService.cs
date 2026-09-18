@@ -66,8 +66,9 @@ public class KeyVaultService(ILogger<KeyVaultService> logger, IResourceNamingSer
                     NetworkAcls = new NetworkRuleSetArgs
                     {
                         DefaultAction = settings.KeyVault.NetworkAccess.DefaultActionString,
-                Bypass = settings.KeyVault.NetworkAccess.BypassString,
-                        IpRules = settings.KeyVault.NetworkAccess.AllowedIpRanges.Select(ip => new IPRuleArgs { Value = ip }).ToArray()
+                        Bypass = settings.KeyVault.NetworkAccess.BypassString,
+                        IpRules = settings.KeyVault.NetworkAccess.AllowedIpRanges.Select(ip => new IPRuleArgs { Value = ip }).ToArray(),
+                        VirtualNetworkRules = settings.KeyVault.NetworkAccess.AllowedSubnetIds.Select(subnetId => new VirtualNetworkRuleArgs { Id = subnetId }).ToArray()
                     }
                 },
                 Tags = ResourceTagHelper.GetStandardTags(settings.Environment, DeploymentConstants.ResourceTags.KeyVaultType)

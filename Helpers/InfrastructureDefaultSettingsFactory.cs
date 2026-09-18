@@ -229,7 +229,6 @@ public static class InfrastructureDefaultSettingsFactory
             VNetAddressSpace = InfrastructureConstants.Network.DefaultVNetAddressSpace,
             ContainerAppsSubnet = InfrastructureConstants.Network.DefaultContainerAppsSubnet,
             PrivateEndpointsSubnet = InfrastructureConstants.Network.DefaultPrivateEndpointsSubnet,
-            EnablePrivateEndpoints = true,
             EnableNetworkSecurityGroups = true,
             EnableDdosProtection = false,
             IsInternalEnvironment = false

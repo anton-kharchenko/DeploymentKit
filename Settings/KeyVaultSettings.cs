@@ -38,16 +38,6 @@ namespace DeploymentKit.Settings
         public bool EnableRbacAuthorization { get; set; } = true;
 
         /// <summary>
-        /// Enable public network access (false for private endpoint only)
-        /// </summary>
-        public bool EnablePublicNetworkAccess { get; set; } = true;
-
-        /// <summary>
-        /// Enable private endpoints for Key Vault
-        /// </summary>
-        public bool EnablePrivateEndpoints { get; set; }
-
-        /// <summary>
         /// Environment-specific access policies
         /// </summary>
         public DevAccessPoliciesSettings DevAccessPolicies { get; set; } = new();
