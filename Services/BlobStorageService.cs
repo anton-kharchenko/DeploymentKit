@@ -174,7 +174,7 @@ public class BlobStorageService(ILogger<BlobStorageService> logger, IResourceNam
             },
             EnableHttpsTrafficOnly = settings.Storage?.EnableHttpsTrafficOnly ?? true,
             AllowBlobPublicAccess = settings.BlobStorage.AllowPublicAccess,
-            AllowSharedKeyAccess = settings.Storage?.AllowSharedKeyAccess ?? true,
+            AllowSharedKeyAccess = settings.Storage?.AllowSharedKeyAccess ?? false,
             MinimumTlsVersion = settings.Storage?.MinimumTlsVersion.ToStringValue() ?? "TLS1_2",
             Tags = tags
         });

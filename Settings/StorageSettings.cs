@@ -33,9 +33,10 @@ public class StorageSettings
     public bool AllowBlobPublicAccess { get; set; }
 
     /// <summary>
-    /// Enable shared key access
+    /// Enable shared key access. Disabled by default: connection strings and account keys
+    /// returned by the storage services require this to be enabled.
     /// </summary>
-    public bool AllowSharedKeyAccess { get; set; } = true;
+    public bool AllowSharedKeyAccess { get; set; }
 
     /// <summary>
     /// Default content type for blobs

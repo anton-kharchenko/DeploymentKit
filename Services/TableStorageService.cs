@@ -148,7 +148,7 @@ public class TableStorageService(ILogger<TableStorageService> logger, IResourceN
                 Name = settings.Storage?.ReplicationType.ToStringValue() ?? StorageConstants.StandardLrs
             },
             EnableHttpsTrafficOnly = settings.Storage?.EnableHttpsTrafficOnly ?? true,
-            AllowSharedKeyAccess = settings.Storage?.AllowSharedKeyAccess ?? true,
+            AllowSharedKeyAccess = settings.Storage?.AllowSharedKeyAccess ?? false,
             MinimumTlsVersion = settings.Storage?.MinimumTlsVersion.ToStringValue() ?? "TLS1_2",
             Encryption = (settings.TableStorage!.EnableEncryption ? new EncryptionArgs
             {
