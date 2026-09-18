@@ -22,7 +22,6 @@ public static class ContainerAppConfigurationHelper
     /// </summary>
     public static (InputList<SecretArgs> secrets, List<string> secretNames) BuildSecretsListWithKeyVault(
         InfrastructureSettings settings,
-        ContainerRegistryOutputs containerRegistry,
         DatabaseOutputs database,
         KeyVaultOutputs? keyVault,
         ILogger logger)
@@ -58,13 +57,6 @@ public static class ContainerAppConfigurationHelper
         }
         else
         {
-            secretsList.Add(new SecretArgs
-            {
-                Name = ServiceConstants.ContainerApps.AcrPasswordSecretRef,
-                Value = containerRegistry.Password
-            });
-            secretNames.Add(ServiceConstants.ContainerApps.AcrPasswordSecretRef);
-
             secretsList.Add(new SecretArgs
             {
                 Name = ServiceConstants.ContainerApps.DbPasswordSecretRef,

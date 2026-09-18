@@ -18,6 +18,7 @@ namespace DeploymentKit.Helpers.ContainerApps;
 public static class ContainerAppsIdentityHelper
 {
     private const string KeyVaultSecretsUserRoleId = ServiceConstants.KeyVault.SecretsUserRoleId;
+    private const string AcrPullRoleId = ServiceConstants.ContainerRegistry.AcrPullRoleId;
 
     /// <summary>
     /// Gets the identity configuration for Container App
@@ -27,7 +28,9 @@ public static class ContainerAppsIdentityHelper
     /// <returns>Managed Service Identity arguments</returns>
     public static ContainerAppManagedServiceIdentityArgs? GetContainerAppIdentity(InfrastructureSettings settings, KeyVaultOutputs? keyVault)
     {
-        if (!ContainerAppsSecretsHelper.ShouldUseKeyVaultSecrets(settings, keyVault))
+        var needsAcrAccess = settings.Container is { UsePlaceholderImages: false };
+
+        if (!needsAcrAccess && !ContainerAppsSecretsHelper.ShouldUseKeyVaultSecrets(settings, keyVault))
         {
             return null;
         }
@@ -97,6 +100,90 @@ public static class ContainerAppsIdentityHelper
             PrincipalId = principalId,
             RoleDefinitionId = roleDefinitionId,
             Scope = keyVault.ResourceId
+        }, ComponentResourceScope.CreateChildOptions(roleAssignmentName, options => options.DependsOn = new[] { app }));
+    }
+
+    /// <summary>
+    /// Configures AcrPull role assignments for Container Apps pulling images from the Azure Container Registry.
+    /// </summary>
+    /// <param name="settings">Infrastructure settings</param>
+    /// <param name="containerRegistry">Container Registry outputs</param>
+    /// <param name="apiApp">API Container App</param>
+    /// <param name="jobsApp">Jobs Container App</param>
+    /// <param name="botApp">Bot Container App</param>
+    public static void ConfigureAcrAccessForContainerApps(
+        InfrastructureSettings settings,
+        ContainerRegistryOutputs containerRegistry,
+        ContainerApp apiApp,
+        ContainerApp jobsApp,
+        ContainerApp? botApp)
+    {
+        if (settings.Container is not { UsePlaceholderImages: false })
+        {
+            return;
+        }
+
+        CreateAcrRoleAssignment(
+            CreateDeterministicGuid($"{containerRegistry.Name}-api-{AcrPullRoleId}"),
+            apiApp,
+            settings,
+            containerRegistry);
+
+        CreateAcrRoleAssignment(
+            CreateDeterministicGuid($"{containerRegistry.Name}-jobs-{AcrPullRoleId}"),
+            jobsApp,
+            settings,
+            containerRegistry);
+
+        if (botApp != null)
+        {
+            CreateAcrRoleAssignment(
+                CreateDeterministicGuid($"{containerRegistry.Name}-bot-{AcrPullRoleId}"),
+                botApp,
+                settings,
+                containerRegistry);
+        }
+    }
+
+    /// <summary>
+    /// Configures an AcrPull role assignment for a single Container App.
+    /// </summary>
+    /// <param name="settings">Infrastructure settings</param>
+    /// <param name="containerRegistry">Container Registry outputs</param>
+    /// <param name="app">Container App</param>
+    /// <param name="suffix">Suffix identifying the app in the deterministic role assignment name</param>
+    public static void ConfigureAcrAccess(
+        InfrastructureSettings settings,
+        ContainerRegistryOutputs containerRegistry,
+        ContainerApp app,
+        string suffix)
+    {
+        if (settings.Container is not { UsePlaceholderImages: false })
+        {
+            return;
+        }
+
+        CreateAcrRoleAssignment(
+            CreateDeterministicGuid($"{containerRegistry.Name}-{suffix}-{AcrPullRoleId}"),
+            app,
+            settings,
+            containerRegistry);
+    }
+
+    private static void CreateAcrRoleAssignment(
+        string roleAssignmentName,
+        ContainerApp app,
+        InfrastructureSettings settings,
+        ContainerRegistryOutputs containerRegistry)
+    {
+        var principalId = app.Identity.Apply(identity => identity?.PrincipalId ?? string.Empty);
+        var roleDefinitionId = $"/subscriptions/{settings.SubscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{AcrPullRoleId}";
+
+        _ = new RoleAssignment(roleAssignmentName, new RoleAssignmentArgs
+        {
+            PrincipalId = principalId,
+            RoleDefinitionId = roleDefinitionId,
+            Scope = containerRegistry.ResourceId
         }, ComponentResourceScope.CreateChildOptions(roleAssignmentName, options => options.DependsOn = new[] { app }));
     }
 

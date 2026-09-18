@@ -340,6 +340,11 @@ public static class ServiceConstants
     {
         public const string ResourceType = "container-registry";
 
+        /// <summary>
+        /// Azure built-in role definition ID for the AcrPull role.
+        /// </summary>
+        public const string AcrPullRoleId = "7f951dda-4ed3-4680-a7ca-43fe172d538d";
+
         // Error messages
         public const string CreationFailedMessage = "Failed to create Azure Container Registry for environment '{0}'";
         public const string CreationStartMessage = "Creating Azure Container Registry for environment: {0}";
@@ -376,7 +381,6 @@ public static class ServiceConstants
         public const string CreationStartMessage = "Creating Container Apps environment and applications for environment: {Environment}";
         public const string CreationSuccessMessage = "Successfully created Container Apps environment: {EnvironmentName} with API and Jobs apps";
         public const string CreationFailedMessage = "Failed to create Container Apps for environment: {Environment}";
-        public const string AcrPasswordSecretRef = "acr-password";
         public const string DbPasswordSecretRef = "db-password";
         public const string PostgresConnectionStringSecretRef = "postgres-connection-string";
         public const string CpuScalingRuleName = "cpu-scaling-rule";

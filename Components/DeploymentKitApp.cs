@@ -24,8 +24,6 @@ public sealed class DeploymentKitApp : ComponentResource
         {
             [ComponentOutputKeys.AcrName] = outputs.Name,
             [ComponentOutputKeys.LoginServer] = outputs.LoginServer,
-            [ComponentOutputKeys.Username] = outputs.Username,
-            [ComponentOutputKeys.Password] = outputs.Password,
             [ComponentOutputKeys.ResourceId] = outputs.ResourceId
         });
 

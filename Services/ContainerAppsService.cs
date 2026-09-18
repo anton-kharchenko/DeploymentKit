@@ -148,6 +148,7 @@ public class ContainerAppsService(ILogger<ContainerAppsService> logger, IResourc
             var botApp = CreateBotContainerApp(settings, resourceGroup, containerAppsEnvironment, containerRegistry, database, cache, monitoring, eventHubs, keyVault, azureFrontDoorId);
 
             ContainerAppsIdentityHelper.ConfigureKeyVaultAccessForContainerApps(settings, keyVault, apiApp, jobsApp, botApp, _namingService);
+            ContainerAppsIdentityHelper.ConfigureAcrAccessForContainerApps(settings, containerRegistry, apiApp, jobsApp, botApp);
 
             var outputs = new ContainerAppsOutputs
             {
@@ -237,7 +238,7 @@ public class ContainerAppsService(ILogger<ContainerAppsService> logger, IResourc
         var imageToUse = ResolveImage(settings.Container!.UsePlaceholderImages, containerRegistry.LoginServer, settings.Container.ApiImageTag);
         var ingressConfig = ContainerAppsConfigurationHelper.CreateIngressConfiguration(settings.Container.IngressSettings, _logger);
         var registries = BuildRegistries(settings, containerRegistry);
-        var (secrets, secretNames) = ContainerAppsSecretsHelper.BuildSecretsListWithKeyVault(settings, containerRegistry, database, keyVault, _logger);
+        var (secrets, secretNames) = ContainerAppsSecretsHelper.BuildSecretsListWithKeyVault(settings, database, keyVault, _logger);
 
         _logger.LogInformation("Creating API Container App with {SecretCount} secrets configured", secretNames.Count);
 
@@ -292,7 +293,7 @@ public class ContainerAppsService(ILogger<ContainerAppsService> logger, IResourc
         var imageToUse = ResolveImage(settings.Container!.UsePlaceholderImages, containerRegistry.LoginServer, settings.Container.JobsImageTag);
         var ingressConfig = ContainerAppsConfigurationHelper.CreateIngressConfiguration(CreateInternalIngressSettings(settings), _logger);
         var registries = BuildRegistries(settings, containerRegistry);
-        var (secrets, secretNames) = ContainerAppsSecretsHelper.BuildSecretsListWithKeyVault(settings, containerRegistry, database, keyVault, _logger);
+        var (secrets, secretNames) = ContainerAppsSecretsHelper.BuildSecretsListWithKeyVault(settings, database, keyVault, _logger);
 
         _logger.LogInformation("Creating Jobs Container App with {SecretCount} secrets configured", secretNames.Count);
 
@@ -355,7 +356,7 @@ public class ContainerAppsService(ILogger<ContainerAppsService> logger, IResourc
         var imageToUse = ResolveImage(settings.Container!.UsePlaceholderImages, containerRegistry.LoginServer, imageTag ?? string.Empty);
         var ingressConfig = ContainerAppsConfigurationHelper.CreateIngressConfiguration(CreateBotIngressSettings(settings), _logger);
         var registries = BuildRegistries(settings, containerRegistry);
-        var (secrets, secretNames) = ContainerAppsSecretsHelper.BuildSecretsListWithKeyVault(settings, containerRegistry, database, keyVault, _logger);
+        var (secrets, secretNames) = ContainerAppsSecretsHelper.BuildSecretsListWithKeyVault(settings, database, keyVault, _logger);
 
         _logger.LogInformation("Creating Bot Container App with {SecretCount} secrets configured", secretNames.Count);
 
@@ -457,8 +458,7 @@ public class ContainerAppsService(ILogger<ContainerAppsService> logger, IResourc
             new RegistryCredentialsArgs
             {
                 Server = containerRegistry.LoginServer,
-                Username = containerRegistry.Username,
-                PasswordSecretRef = ServiceConstants.ContainerApps.AcrPasswordSecretRef
+                Identity = "system"
             }
         ];
     }
@@ -494,8 +494,6 @@ public class ContainerAppsService(ILogger<ContainerAppsService> logger, IResourc
         var containerRegistry = new ContainerRegistryOutputs
         {
             LoginServer = Output.Create(ContainerAppConstants.DefaultRegistryServer),
-            Username = Output.Create(""),
-            Password = Output.CreateSecret(string.Empty),
             ResourceId = Output.Create(string.Empty)
         };
 

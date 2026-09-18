@@ -224,7 +224,6 @@ public static class DeploymentConstants
         public const string CpuScalingRuleName = "cpu-scaling";
         public const string CpuScalingType = "cpu";
         public const string CpuUtilizationType = "Utilization";
-        public const string AcrPasswordSecretName = "acr-password";
         public const string DbPasswordSecretName = "db-password";
         public const string PostgresConnectionStringSecretName = "postgres-connection-string";
         public const string DefaultCpu = "0.5";

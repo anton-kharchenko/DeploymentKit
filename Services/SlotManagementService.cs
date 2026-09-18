@@ -2,6 +2,7 @@ using DeploymentKit.Constants;
 using DeploymentKit.Enums;
 using DeploymentKit.Exceptions;
 using DeploymentKit.Extensions;
+using DeploymentKit.Helpers.ContainerApps;
 using DeploymentKit.Interfaces;
 using DeploymentKit.Models.Outputs;
 using DeploymentKit.Settings;
@@ -74,13 +75,11 @@ public class SlotManagementService : ISlotManagementService
                     new RegistryCredentialsArgs
                     {
                         Server = containerRegistry.LoginServer,
-                        Username = containerRegistry.Username,
-                        PasswordSecretRef = ContainerAppConstants.AcrPasswordSecretName
+                        Identity = "system"
                     }
                 },
                 Secrets = new[]
                 {
-                    new SecretArgs { Name = ContainerAppConstants.AcrPasswordSecretName, Value = containerRegistry.Password },
                     new SecretArgs { Name = ContainerAppConstants.DbPasswordSecretName, Value = Output.CreateSecret(settings.Database?.Password ?? throw new InvalidOperationException()) },
                     new SecretArgs { Name = ContainerAppConstants.PostgresConnectionStringSecretName, Value = database.ConnectionString }
                 }
@@ -133,6 +132,8 @@ public class SlotManagementService : ISlotManagementService
             },
             Tags = ResourceTagHelper.GetStandardTags(settings.Environment, $"{GreenBlueConstants.ContainerAppPrefix}{slotName}")
         });
+
+        ContainerAppsIdentityHelper.ConfigureAcrAccess(settings, containerRegistry, containerApp, $"slot-{slotName.ToLowerInvariant()}");
 
         return Task.FromResult(new SlotOutputs
         {

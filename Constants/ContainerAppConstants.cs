@@ -14,7 +14,6 @@ public static class ContainerAppConstants
     public const string DeploymentTimestamp = "DEPLOYMENT_TIMESTAMP";
 
     // Secrets
-    public const string AcrPasswordSecretName = "acr-password";
     public const string DbPasswordSecretName = "db-password";
     public const string PostgresConnectionStringSecretName = "postgres-connection-string";
 

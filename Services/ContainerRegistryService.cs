@@ -61,7 +61,14 @@ public class ContainerRegistryService(ILogger<ContainerRegistryService> logger, 
                 RegistryName = acrName,
                 ResourceGroupName = resourceGroup,
                 Location = settings.Location,
-                AdminUserEnabled = true,
+                AdminUserEnabled = false,
+                Policies = new PoliciesArgs
+                {
+                    AzureADAuthenticationAsArmPolicy = new AzureADAuthenticationAsArmPolicyArgs
+                    {
+                        Status = AzureADAuthenticationAsArmPolicyStatus.Enabled
+                    }
+                },
                 Sku = new SkuArgs
                 {
                     Name = SkuName.Basic
@@ -69,18 +76,9 @@ public class ContainerRegistryService(ILogger<ContainerRegistryService> logger, 
                 Tags = ResourceTagHelper.GetStandardTags(settings.Environment, ServiceConstants.ContainerRegistry.ResourceType)
             }, ComponentResourceScope.CreateChildOptions(acrName));
 
-            // Get ACR credentials
-            var acrCreds = ListRegistryCredentials.Invoke(new ListRegistryCredentialsInvokeArgs
-            {
-                ResourceGroupName = resourceGroup,
-                RegistryName = acr.Name,
-            });
-
             var outputs = new ContainerRegistryOutputs
             {
                 LoginServer = acr.LoginServer,
-                Username = acrCreds.Apply(c => c.Username ?? string.Empty),
-                Password = Output.CreateSecret(acrCreds.Apply(c => c.Passwords.Length > 0 ? c.Passwords[0].Value ?? string.Empty : string.Empty)),
                 Name = acrName,
                 ResourceId = acr.Id
             };

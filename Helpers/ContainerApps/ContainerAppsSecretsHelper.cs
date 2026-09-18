@@ -16,14 +16,12 @@ public static class ContainerAppsSecretsHelper
     /// Builds Container App secrets list including Key Vault secrets if ApplyToContainerApps is enabled
     /// </summary>
     /// <param name="settings">Infrastructure settings</param>
-    /// <param name="containerRegistry">Container Registry outputs</param>
     /// <param name="database">Database outputs</param>
     /// <param name="keyVault">Key Vault outputs</param>
     /// <param name="logger">Logger instance</param>
     /// <returns>Tuple of secrets list and secret names</returns>
     public static (InputList<SecretArgs> secrets, List<string> secretNames) BuildSecretsListWithKeyVault(
         InfrastructureSettings settings,
-        ContainerRegistryOutputs containerRegistry,
         DatabaseOutputs database,
         KeyVaultOutputs? keyVault,
         ILogger logger)
@@ -59,13 +57,6 @@ public static class ContainerAppsSecretsHelper
         }
         else
         {
-            secretsList.Add(new SecretArgs
-            {
-                Name = ServiceConstants.ContainerApps.AcrPasswordSecretRef,
-                Value = containerRegistry.Password
-            });
-            secretNames.Add(ServiceConstants.ContainerApps.AcrPasswordSecretRef);
-
             secretsList.Add(new SecretArgs
             {
                 Name = ServiceConstants.ContainerApps.DbPasswordSecretRef,
