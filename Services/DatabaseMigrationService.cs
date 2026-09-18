@@ -353,7 +353,7 @@ public class DatabaseMigrationService(
                 throw new InvalidOperationException("Database password not found in settings. Please ensure Database.Password is set.");
             }
 
-            connectionString = $"Host={host};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true;";
+            connectionString = $"Host={host};Database={database};Username={username};Password={password};SSL Mode=VerifyFull;";
         }
 
         executionLog.AppendLine("Connection string retrieved successfully");
@@ -573,7 +573,7 @@ public class DatabaseMigrationService(
                 throw new InvalidOperationException("Database password not found in settings. Please ensure Database.Password is set.");
             }
 
-            connectionString = $"Host={host};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true;";
+            connectionString = $"Host={host};Database={database};Username={username};Password={password};SSL Mode=VerifyFull;";
         }
 
         // Execute SQL using Npgsql

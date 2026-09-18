@@ -31,18 +31,27 @@ public class DatabaseService(ILogger<DatabaseService> logger, ICorrelationIdServ
         ArgumentNullException.ThrowIfNull(settings);
         ArgumentNullException.ThrowIfNull(resourceGroup);
 
-        var componentName = $"{settings.NamingPrefix}-database-{settings.Environment}";
-        return DeploymentKitDatabase.CreateAsync(componentName, () => CreateCoreAsync(settings, resourceGroup, cancellationToken));
+        return CreateAsync(settings, resourceGroup, null, cancellationToken);
     }
 
-    Task<DatabaseOutputs> IDatabaseService.CreateAsync(
+    public Task<DatabaseOutputs> CreateAsync(
         InfrastructureSettings settings,
         Input<string> resourceGroup,
         NetworkOutputs? network,
-        CancellationToken cancellationToken) =>
-        CreateAsync(settings, resourceGroup, cancellationToken);
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+        ArgumentNullException.ThrowIfNull(resourceGroup);
 
-    private Task<DatabaseOutputs> CreateCoreAsync(InfrastructureSettings settings, Input<string> resourceGroup, CancellationToken cancellationToken = default)
+        var componentName = $"{settings.NamingPrefix}-database-{settings.Environment}";
+        return DeploymentKitDatabase.CreateAsync(componentName, () => CreateCoreAsync(settings, resourceGroup, network, cancellationToken));
+    }
+
+    private Task<DatabaseOutputs> CreateCoreAsync(
+        InfrastructureSettings settings,
+        Input<string> resourceGroup,
+        NetworkOutputs? network,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(settings);
         ArgumentNullException.ThrowIfNull(resourceGroup);
@@ -99,7 +108,7 @@ public class DatabaseService(ILogger<DatabaseService> logger, ICorrelationIdServ
 
             // Create PostgreSQL Server
             var serverStopwatch = Stopwatch.StartNew();
-            var postgresServer = CreatePostgreSqlServer(settings, resourceGroup, serverName, correlationId);
+            var postgresServer = CreatePostgreSqlServer(settings, resourceGroup, serverName, correlationId, network);
             _logger.LogInformation(ServiceConstants.Database.ServerCreationInitiatedMessage, serverName, serverStopwatch.ElapsedMilliseconds, correlationId);
 
             // Configure Server Parameters (SSL, etc.)
@@ -112,7 +121,7 @@ public class DatabaseService(ILogger<DatabaseService> logger, ICorrelationIdServ
 
             // Generate connection string
             var connectionString = Output.CreateSecret(
-                Output.Format($"Host={postgresServer.FullyQualifiedDomainName};Database={database.Name};Username={settings.Database.AdminUser};Password={settings.Database.Password};SSL Mode=Require;"));
+                Output.Format($"Host={postgresServer.FullyQualifiedDomainName};Database={database.Name};Username={settings.Database.AdminUser};Password={settings.Database.Password};SSL Mode=VerifyFull;"));
 
             var outputs = new DatabaseOutputs
             {
@@ -151,7 +160,7 @@ public class DatabaseService(ILogger<DatabaseService> logger, ICorrelationIdServ
         }
     }
 
-    private Server CreatePostgreSqlServer(InfrastructureSettings settings, Input<string> resourceGroup, string serverName, string correlationId)
+    private Server CreatePostgreSqlServer(InfrastructureSettings settings, Input<string> resourceGroup, string serverName, string correlationId, NetworkOutputs? network)
     {
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
@@ -164,7 +173,7 @@ public class DatabaseService(ILogger<DatabaseService> logger, ICorrelationIdServ
         {
             _logger.LogInformation(ServiceConstants.Database.ServerCreationStartMessage, serverName, settings.Location, correlationId, settings.Database.VersionString, SkuTier.Burstable, settings.Database.AvailabilityZone);
 
-            var postgresServer = new Server(serverName, new ServerArgs
+            var serverArgs = new ServerArgs
             {
                 ServerName = serverName,
                 ResourceGroupName = resourceGroup,
@@ -188,7 +197,20 @@ public class DatabaseService(ILogger<DatabaseService> logger, ICorrelationIdServ
                     ActiveDirectoryAuth = "Enabled",
                     PasswordAuth = "Enabled"
                 }
-            }, ComponentResourceScope.CreateChildOptions(serverName));
+            };
+
+            if (UsePrivateNetworking(settings, network))
+            {
+                _logger.LogInformation("Configuring PostgreSQL server {ServerName} for private access via delegated subnet and private DNS zone for CorrelationId: {CorrelationId}", serverName, correlationId);
+
+                serverArgs.Network = new NetworkArgs
+                {
+                    DelegatedSubnetResourceId = network!.DatabaseSubnetId,
+                    PrivateDnsZoneArmResourceId = network.DatabasePrivateDnsZoneId
+                };
+            }
+
+            var postgresServer = new Server(serverName, serverArgs, ComponentResourceScope.CreateChildOptions(serverName));
 
             _logger.LogDebug(ServiceConstants.Database.ServerConfiguredMessage, serverName, correlationId, settings.Database.StorageSizeGb, settings.Database.AdminUser);
 
@@ -308,6 +330,15 @@ public class DatabaseService(ILogger<DatabaseService> logger, ICorrelationIdServ
             throw;
         }
     }
+
+    /// <summary>
+    /// Private networking is used when the orchestrator created VNet infrastructure for the environment.
+    /// Mirrors the VNet creation condition in NetworkService.
+    /// </summary>
+    private static bool UsePrivateNetworking(InfrastructureSettings settings, NetworkOutputs? network) =>
+        network != null &&
+        !string.IsNullOrEmpty(settings.Network?.VNetAddressSpace) &&
+        !string.IsNullOrEmpty(settings.Network?.ContainerAppsSubnet);
 
     async Task<object> IInfrastructureService.CreateAsync(InfrastructureSettings settings, Input<string> resourceGroup, CancellationToken cancellationToken) => await CreateAsync(settings, resourceGroup, cancellationToken);
 
